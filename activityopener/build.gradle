@@ -1,0 +1,61 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+
+
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    compileOnly files('libs/unity.jar')
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+task build_jar(group : "opener_plugin",
+        dependsOn : "assembleRelease"){
+    doLast{
+        tasks.delete_sdk_jar.execute()
+        tasks.copy_sdk_jar.execute()
+    }
+}
+
+task copy_sdk_jar(type : Copy){
+    from("build/intermediates/bundles/release/")
+    into("../release/")
+    include("classes.jar")
+    rename("classes.jar", "opener_plugin.jar")
+    doLast{
+        println "opener_plugin.jar Project Create Complete !!!"
+    }
+}
+
+task delete_sdk_jar(type: Delete){
+    delete "../release/"
+
+    doLast{
+        println "Delete Jar Project SDK!!"
+    }
+}
